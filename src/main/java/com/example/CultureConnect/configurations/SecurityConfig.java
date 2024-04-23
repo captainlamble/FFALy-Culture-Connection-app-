@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,20 +23,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().authenticated()
 
+    return   http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll()
                 )
+
                 .formLogin(form -> form
                         .loginPage("/registration")
                         .permitAll()
                         .loginPage("/login")
+                        .loginProcessingUrl("/login-processing")
+                        .defaultSuccessUrl("/index", true)
                         .permitAll()
 
+
                 )
-                .httpBasic(Customizer.withDefaults());
-        return http.build();
+
+                .httpBasic(Customizer.withDefaults())
+                .build();
     }
 
 
@@ -54,7 +61,7 @@ public class SecurityConfig {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
                 .dataSource(dataSource)
-                .usersByUsernameQuery("SELECT email, password FROM users WHERE username=?")
+                .usersByUsernameQuery("SELECT email, password FROM users WHERE email=?")
                 .authoritiesByUsernameQuery("SELECT username, authority FROM user_role WHERE username=?");
     }
 }

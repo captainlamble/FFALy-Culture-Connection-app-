@@ -38,10 +38,8 @@ public class User implements UserDetails {
     private String username;
     @Column(name = "active")
     private boolean active;
-
-  /*  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "image_id")
-    private Image avatar;*/
+    @Column(name ="imageUrl")
+    private String imageUrl;
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"))
